@@ -1,7 +1,6 @@
 import sys
 import math
 
-
 def get_parameter_vectors():
     '''
     This function parses e.txt and s.txt to get the  26-dimensional multinomial
@@ -41,15 +40,10 @@ def shred(filename):
     X = dict()
     with open(filename, encoding='utf-8') as f:
         # TODO: add your code here
-        while True:
-            lst = list(f.readline())
-            if not lst:
-                break
-
+        for lst in f:
             # Read from the list
             for c in lst:
                 c = c.upper()
-
                 # check the letter if it is inside the boundary
                 if 'A' <= c and c <= 'Z':
                     if c in X:
@@ -63,10 +57,11 @@ def shred(filename):
 # You are free to implement it as you wish!
 # Happy Coding!
 
+    
 def main():
     print("Q1")
 
-    X = shred("letter.txt")
+    X = shred('letter.txt')
     for i in range(ord('A'), ord('Z') + 1):
         c = chr(i)
         if c in X.keys():
@@ -83,26 +78,28 @@ def main():
         print("%.4f\n%.4f" % (X1e1, X1s1))
     else:
         print("-0.0000\n-0/0000")
-    
+
     print("Q3")
-    
-    EngXlogP = 0
-    SpaXlogP = 0
-    
+
+    Feng = math.log(0.6)
+    Fspa = math.log(0.4)
+
     for i in range(ord('A'), ord('Z') + 1):
         c = chr(i)
         if c in X.keys():
-            EngXlogP += X[c] * math.log(tuple[0][ord(c) - ord('A')])
-            SpaXlogP += X[c] * math.log(tuple[1][ord(c) - ord('A')])
-        
-    Feng = math.log(0.6) + EngXlogP
-    Fspa = math.log(0.4) + SpaXlogP
-    
+            Feng += X[c] * math.log(tuple[0][ord(c) - ord('A')])
+            Fspa += X[c] * math.log(tuple[1][ord(c) - ord('A')])
+
     print("%.4f\n%.4f" % (Feng, Fspa))
-    
+
     print("Q4")
-    
-    print("%.4f" % (1 / (1 + math.exp(Fspa - Feng))))
+    if (Fspa - Feng >= 100):
+        print("0.0000")
+    elif (Fspa - Feng <= -100):
+        print("1.0000")
+    else:
+        print("%.4f" % (1 / (1 + math.exp(Fspa - Feng))))
+
 
 if __name__ == "__main__":
     main()
