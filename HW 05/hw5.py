@@ -2,7 +2,6 @@ import sys
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.cluster.hierarchy import dendrogram
 
 if __name__ == '__main__':
     # sys.argv[1] #this contains the first argument as string
