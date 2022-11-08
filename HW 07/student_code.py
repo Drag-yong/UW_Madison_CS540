@@ -12,26 +12,76 @@ import torchvision
 import torchvision.transforms as transforms
 
 
+# python imports
+import os
+from tqdm import tqdm
+
+# torch imports
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# helper functions for computer vision
+import torchvision
+import torchvision.transforms as transforms
+
+
 class LeNet(nn.Module):
     def __init__(self, input_shape=(32, 32), num_classes=100):
         super(LeNet, self).__init__()
         # certain definitions
+        # Convolution
+        self.conv1 = nn.Conv2d(in_channels=3, out_channels=6, kernel_size=5, stride=1, bias=True)
+        # Max-pooling
+        self.max_pool_1 = nn.MaxPool2d(kernel_size=2, stride=2)
+        # Convolution
+        self.conv2 = torch.nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1, bias=True)
+        # Max-pool
+        self.max_pool_2 = nn.MaxPool2d(kernel_size=2, stride=2)
+        # Fully connected layer
+        self.fc1 = nn.Linear(16*5*5, 256)
+        self.fc2 = nn.Linear(256, 128)
+        self.fc3 = nn.Linear(128, num_classes)
 
     def forward(self, x):
         shape_dict = {}
         # certain operations
+        # convolve, then perform ReLU non-linearity
+        x = nn.functional.relu(self.conv1(x))
+        # max-pooling with 2x2 grid
+        x = self.max_pool_1(x)
+        shape_dict[1] = x
+        # convolve, then perform ReLU non-linearity
+        x = nn.functional.relu(self.conv2(x))
+        #max-pooling with 2x2 grid
+        x = self.max_pool_2(x)
+        shape_dict[2] = x
+        # first flatten 'max_pool_2_out' to contain 32*32 columns
+        x = x.view(-1, 16*5*5)
+        shape_dict[3] = x
+        # FC-1, then perform ReLU non-linearity
+        x = nn.functional.relu(self.fc1(x))
+        shape_dict[4] = x
+        # FC-2, then perform ReLU non-linearity
+        x = nn.functional.relu(self.fc2(x))
+        shape_dict[5] = x
+        # FC-3
+        out = self.fc3(x)
+        shape_dict[6] = out
+        
         return out, shape_dict
-
-
+    
 def count_model_params():
     '''
     return the number of trainable parameters of LeNet.
     '''
     model = LeNet()
     model_params = 0.0
+    iter = model.named_parameters()
+    for i in iter:
+        model_params += 1
 
     return model_params
-
 
 def train_model(model, train_loader, optimizer, criterion, epoch):
     """
@@ -66,7 +116,6 @@ def train_model(model, train_loader, optimizer, criterion, epoch):
     print('[Training set] Epoch: {:d}, Average loss: {:.4f}'.format(epoch+1, train_loss))
 
     return train_loss
-
 
 def test_model(model, test_loader, epoch):
     model.eval()
