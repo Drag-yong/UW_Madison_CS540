@@ -12,20 +12,6 @@ import torchvision
 import torchvision.transforms as transforms
 
 
-# python imports
-import os
-from tqdm import tqdm
-
-# torch imports
-import torch
-import torch.nn as nn
-import torch.optim as optim
-
-# helper functions for computer vision
-import torchvision
-import torchvision.transforms as transforms
-
-
 class LeNet(nn.Module):
     def __init__(self, input_shape=(32, 32), num_classes=100):
         super(LeNet, self).__init__()
