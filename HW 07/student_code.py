@@ -22,7 +22,7 @@ class LeNet(nn.Module):
         self.max_pool_1 = nn.MaxPool2d(kernel_size=2, stride=2)
         # Convolution
         self.conv2 = torch.nn.Conv2d(in_channels=6, out_channels=16, kernel_size=5, stride=1, bias=True)
-        # Max-pool
+        # Max-pooling
         self.max_pool_2 = nn.MaxPool2d(kernel_size=2, stride=2)
         # Fully connected layer
         self.fc1 = nn.Linear(16*5*5, 256)
@@ -36,25 +36,25 @@ class LeNet(nn.Module):
         x = nn.functional.relu(self.conv1(x))
         # max-pooling with 2x2 grid
         x = self.max_pool_1(x)
-        shape_dict[1] = x
+        shape_dict[1] = x.size()
         # convolve, then perform ReLU non-linearity
         x = nn.functional.relu(self.conv2(x))
         #max-pooling with 2x2 grid
         x = self.max_pool_2(x)
-        shape_dict[2] = x
+        shape_dict[2] = x.size()
         # first flatten 'max_pool_2_out' to contain 32*32 columns
         x = x.view(-1, 16*5*5)
-        shape_dict[3] = x
+        shape_dict[3] = x.size()
         # FC-1, then perform ReLU non-linearity
         x = nn.functional.relu(self.fc1(x))
-        shape_dict[4] = x
+        shape_dict[4] = x.size()
         # FC-2, then perform ReLU non-linearity
         x = nn.functional.relu(self.fc2(x))
-        shape_dict[5] = x
+        shape_dict[5] = x.size()
         # FC-3
         out = self.fc3(x)
-        shape_dict[6] = out
-        
+        shape_dict[6] = out.size()
+
         return out, shape_dict
     
 def count_model_params():
@@ -63,11 +63,10 @@ def count_model_params():
     '''
     model = LeNet()
     model_params = 0.0
-    iter = model.named_parameters()
-    for i in iter:
-        model_params += 1
+    for p in model.parameters():
+        model_params += p.numel()
 
-    return model_params
+    return model_params / 1000000
 
 def train_model(model, train_loader, optimizer, criterion, epoch):
     """
